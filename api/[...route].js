@@ -54,7 +54,7 @@ export default async function handler(req, res) {
       const { email, password } = await readBody(req);
       const normalized = String(email || '').trim().toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return json(res, 400, { error: 'Enter a valid email address.' });
-      if (typeof password !== 'string' || password.length < 12 || password.length > 128) return json(res, 400, { error: 'Use a password between 12 and 128 characters.' });
+      if (typeof password !== 'string' || password.length < 8 || password.length > 128) return json(res, 400, { error: 'Use a password between 8 and 128 characters.' });
       const salt = randomBytes(16);
       const hash = await scrypt(password, salt, 64);
       const encoded = `${salt.toString('hex')}:${Buffer.from(hash).toString('hex')}`;
