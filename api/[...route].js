@@ -48,7 +48,7 @@ export default async function handler(req, res) {
   const path = new URL(req.url, 'http://localhost').pathname.replace(/^\/api\/?/, '').replace(/\/$/, '');
   const method = req.method || 'GET';
   try {
-    if (path === 'health' && method === 'GET') return json(res, 200, { ok: true });
+    if (path === 'health' && method === 'GET') { const rows = await sql`SELECT current_database() AS database_name, NOW() AS checked_at`; return json(res, 200, { ok: true, database: 'connected', databaseName: rows[0]?.database_name }); }
 
     if (path === 'auth/register' && method === 'POST') {
       const { email, password } = await readBody(req);
