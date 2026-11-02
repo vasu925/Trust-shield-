@@ -123,3 +123,52 @@
   .auth-v2-heading{text-align:left}
   .auth-v2-heading h1{font-size:25px}
 }
+
+
+/* TrustShield authentication theme: midnight navy + electric teal */
+.auth-screen-v2{
+  background:
+    radial-gradient(ellipse at 15% 12%,rgba(20,184,166,.19),transparent 34%),
+    radial-gradient(ellipse at 88% 85%,rgba(59,130,246,.18),transparent 34%),
+    linear-gradient(135deg,#071522 0%,#0b1d2d 52%,#101b35 100%);
+  color:#e7f1fb;
+}
+.auth-screen-v2:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(148,190,220,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(148,190,220,.045) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,#000,transparent 88%);
+}
+.auth-card-v2{
+  position:relative;width:min(460px,100%);padding:34px;
+  background:rgba(10,25,41,.94);border:1px solid rgba(111,165,194,.25);
+  border-radius:20px;color:#e7f1fb;
+  box-shadow:0 28px 90px rgba(0,0,0,.42),0 0 45px rgba(20,184,166,.07);
+  backdrop-filter:blur(18px);
+}
+.auth-brand b{color:#e8f5ff}.auth-brand b span{color:#45d6c5}
+.auth-brand small{color:#829eb5}
+.auth-brand .brand-mark{background:linear-gradient(145deg,#123b4b,#102c45);border:1px solid #246071;color:#55e0cf;box-shadow:0 8px 24px rgba(20,184,166,.13)}
+.auth-v2-heading{text-align:left}
+.auth-v2-icon{margin:0 0 17px;background:#103642;border:1px solid #21636a;color:#56dfce}
+.auth-v2-heading .eyebrow{color:#5bd8c9}
+.auth-v2-heading h1{color:#f1f7fc}
+.auth-v2-heading p{color:#9bb0c3}
+.auth-tabs{background:#071522;border:1px solid #263d50}
+.auth-tabs button{color:#91a7b9}
+.auth-tabs button.selected{background:#153746;color:#65e1d2;box-shadow:inset 0 0 0 1px #286b70}
+.auth-v2-form label{color:#a9bdcd}
+.auth-v2-form>input,.password-field input{background:#071522;border:1px solid #2b4558;color:#eff8ff;border-radius:9px}
+.auth-v2-form>input::placeholder,.password-field input::placeholder{color:#71889b}
+.auth-v2-form>input:focus,.password-field input:focus{border-color:#35bfb4;box-shadow:0 0 0 3px rgba(45,190,177,.14);outline:none}
+.password-field button{color:#91a9bb}.password-field button:hover{color:#5de0d0}
+.auth-v2-form .auth-hint{color:#8da5b8}
+.auth-v2-submit{height:49px;border:1px solid #36bdb2;border-radius:9px;background:linear-gradient(135deg,#19a99e,#147a91);box-shadow:0 10px 26px rgba(20,184,166,.2);color:#fff}
+.auth-v2-submit:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.auth-forgot{color:#62d9ce;font-weight:700}
+.auth-foot{color:#91a8ba;border-color:#294253}
+.auth-foot svg{color:#5bd8c9}
+.auth-error{background:#3a1d27;border:1px solid #75404b;color:#ffb9c1}
+.auth-notice{background:#382f1d;border:1px solid #6b572c;color:#f5d58d}
+.auth-screen-footer{color:#6f899d}
+@media(max-width:520px){.auth-card-v2{padding:26px 22px}}
