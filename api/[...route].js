@@ -75,6 +75,38 @@ export default async function handler(req, res) {
       return json(res, 200, { productName: String(result.productName || 'Product image'), score, level: ['LOW','MEDIUM','HIGH'].includes(result.level) ? result.level : score >= 60 ? 'HIGH' : score >= 25 ? 'MEDIUM' : 'LOW', summary: String(result.summary || ''), findings: Array.isArray(result.findings) ? result.findings.slice(0,8) : [] });
     }
 
+    if (path === 'threat-check' && method === 'POST') {
+      const cookies = parseCookies(req.headers.cookie || '');
+      const session = cookies[COOKIE] ? verify(cookies[COOKIE], secret) : null;
+      if (!session) return json(res, 401, { error: 'Please sign in.' });
+      const body = await readBody(req);
+      let parsed;
+      try { parsed = new URL(String(body.url || '')); } catch { return json(res, 400, { error: 'Enter a valid URL.' }); }
+      if (!['http:', 'https:'].includes(parsed.protocol)) return json(res, 400, { error: 'Only HTTP and HTTPS URLs are supported.' });
+      const checks = [];
+      const safeKey = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
+      const otxKey = process.env.OTX_API_KEY;
+      if (safeKey) {
+        try {
+          const response = await fetch('https://safebrowsing.googleapis.com/v4/threatMatches:find?key=' + encodeURIComponent(safeKey), {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client: { clientId: 'trustshield', clientVersion: '1.0' }, threatInfo: { threatTypes: ['MALWARE','SOCIAL_ENGINEERING','UNWANTED_SOFTWARE','POTENTIALLY_HARMFUL_APPLICATION'], platformTypes: ['ANY_PLATFORM'], threatEntryTypes: ['URL'], threatEntries: [{ url: parsed.href }] } })
+          });
+          const data = await response.json().catch(() => ({}));
+          checks.push({ provider: 'Google Safe Browsing', status: !response.ok ? 'ERROR' : data.matches?.length ? 'THREAT' : 'NO_MATCH', matches: (data.matches || []).map(x => ({ threatType: x.threatType, platformType: x.platformType })) });
+        } catch { checks.push({ provider: 'Google Safe Browsing', status: 'ERROR', matches: [] }); }
+      } else checks.push({ provider: 'Google Safe Browsing', status: 'NOT_CONFIGURED', matches: [] });
+      if (otxKey) {
+        try {
+          const response = await fetch('https://otx.alienvault.com/api/v1/indicators/domain/' + encodeURIComponent(parsed.hostname) + '/general', { headers: { 'X-OTX-API-KEY': otxKey, 'Accept': 'application/json' } });
+          const data = await response.json().catch(() => ({}));
+          const pulses = data.pulse_info?.pulses || [];
+          checks.push({ provider: 'AlienVault OTX', status: !response.ok ? 'ERROR' : pulses.length ? 'THREAT' : 'NO_MATCH', pulseCount: Number(data.pulse_info?.count || pulses.length), pulses: pulses.slice(0, 5).map(p => ({ name: p.name, tags: (p.tags || []).slice(0, 5) })) });
+        } catch { checks.push({ provider: 'AlienVault OTX', status: 'ERROR', pulseCount: 0, pulses: [] }); }
+      } else checks.push({ provider: 'AlienVault OTX', status: 'NOT_CONFIGURED', pulseCount: 0, pulses: [] });
+      return json(res, 200, { url: parsed.href, checks, checkedAt: new Date().toISOString() });
+    }
+
     if (path === 'health' && method === 'GET') { const rows = await sql`SELECT current_database() AS database_name, NOW() AS checked_at`; return json(res, 200, { ok: true, database: 'connected', databaseName: rows[0]?.database_name }); }
 
     if (path === 'auth/register' && method === 'POST') {
