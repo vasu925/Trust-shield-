@@ -117,7 +117,7 @@ export default async function handler(req, res) {
     }
     return json(res, 404, { error: 'Not found.' });
   } catch (error) {
-    console.error('TrustShield API error:', error);
+    console.error('TrustShield API failure:', { path, method, name: error?.name, code: error?.code, message: error?.message });
     if (error?.code === '23505') return json(res, 409, { error: 'That account already exists.' });
     return json(res, 500, { error: 'A server error occurred. Check the server logs.' });
   }
