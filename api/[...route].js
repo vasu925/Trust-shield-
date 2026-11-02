@@ -4,7 +4,7 @@ import { promisify } from 'node:util';
 
 const scrypt = promisify(scryptCallback);
 const COOKIE = 'trustshield_session';
-const SESSION_SECONDS = 60 * 60 * 24 * 7;
+const SESSION_SECONDS = 60 * 60 * 24 * 7; // Signed token expiry is a safety limit; the cookie itself is browser-session only.
 const secureCookie = process.env.NODE_ENV === 'production' ? '; Secure' : '';
 
 function json(res, status, body) {
@@ -48,6 +48,33 @@ export default async function handler(req, res) {
   const path = new URL(req.url, 'http://localhost').pathname.replace(/^\/api\/?/, '').replace(/\/$/, '');
   const method = req.method || 'GET';
   try {
+
+    if (path === 'product-image' && method === 'POST') {
+      const cookies = parseCookies(req.headers.cookie || '');
+      const session = cookies[COOKIE] ? verify(cookies[COOKIE], secret) : null;
+      if (!session) return json(res, 401, { error: 'Please sign in to scan product images.' });
+      const body = await readBody(req);
+      const image = String(body.image || '');
+      const mimeType = String(body.mimeType || '');
+      if (!['image/jpeg','image/png','image/webp'].includes(mimeType)) return json(res, 400, { error: 'Use a JPG, PNG or WEBP image.' });
+      if (!image || image.length > 9_800_000) return json(res, 413, { error: 'Image is too large. Please use an image under 7 MB.' });
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) return json(res, 503, { error: 'Image scanning is not configured yet. Add GEMINI_API_KEY in Vercel environment variables.' });
+      const prompt = `You are TrustShield, a cautious e-commerce scam risk assistant. Inspect the supplied product/listing/seller screenshot and optional user details. Look only for visible evidence: suspicious payment instructions, unrealistic discounts, inconsistent branding or packaging, misleading claims, contact details, suspicious URLs, counterfeit-like visual inconsistencies, or other scam warning signs. Do not claim an item is counterfeit or fraudulent based only on appearance. If the image is ambiguous, say so. Return ONLY valid JSON with keys productName (string), score (integer 0-100), level ("LOW"|"MEDIUM"|"HIGH"), summary (string), findings (array of objects with label, detail, severity "low"|"medium"|"high"). A clean image must not be described as guaranteed safe. User-provided details: ${String(body.details || '').slice(0,3000)}`;
+      const aiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: image } }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } })
+      });
+      const aiData = await aiResponse.json().catch(() => ({}));
+      if (!aiResponse.ok) { console.error('Gemini image analysis failed:', aiData?.error?.message || aiResponse.status); return json(res, 502, { error: 'The image analysis provider could not process this image. Try again later.' }); }
+      const output = aiData?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+      let result;
+      try { result = JSON.parse(output); } catch { return json(res, 502, { error: 'The image analysis returned an unreadable result. Please try again.' }); }
+      const score = Math.max(0, Math.min(100, Number(result.score) || 0));
+      return json(res, 200, { productName: String(result.productName || 'Product image'), score, level: ['LOW','MEDIUM','HIGH'].includes(result.level) ? result.level : score >= 60 ? 'HIGH' : score >= 25 ? 'MEDIUM' : 'LOW', summary: String(result.summary || ''), findings: Array.isArray(result.findings) ? result.findings.slice(0,8) : [] });
+    }
+
     if (path === 'health' && method === 'GET') { const rows = await sql`SELECT current_database() AS database_name, NOW() AS checked_at`; return json(res, 200, { ok: true, database: 'connected', databaseName: rows[0]?.database_name }); }
 
     if (path === 'auth/register' && method === 'POST') {
@@ -62,7 +89,7 @@ export default async function handler(req, res) {
       if (!rows.length) return json(res, 409, { error: 'An account with this email already exists. Please sign in.' });
       const user = rows[0];
       const token = sign({ sub: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + SESSION_SECONDS }, secret);
-      res.setHeader('Set-Cookie', `${COOKIE}=${encodeURIComponent(token)}; HttpOnly${secureCookie}; SameSite=Lax; Path=/; Max-Age=${SESSION_SECONDS}`);
+      res.setHeader('Set-Cookie', `${COOKIE}=${encodeURIComponent(token)}; HttpOnly${secureCookie}; SameSite=Lax; Path=/`);
       return json(res, 201, { user: { id: user.id, email: user.email } });
     }
 
