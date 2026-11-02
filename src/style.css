@@ -38,3 +38,88 @@
 .auth-notice{margin-top:12px;padding:10px;border-radius:6px;background:#302719;color:#f5ca77;font-size:10px;line-height:1.5}
 .auth-screen-footer{position:absolute;bottom:14px;color:#52677f;font:8px 'DM Mono';letter-spacing:1.5px}
 @media(max-width:520px){.auth-screen-v2{align-items:flex-start;padding:30px 14px 55px}.auth-card-v2{padding:25px 20px;margin:auto 0}.auth-v2-heading{margin:26px 0 20px}.auth-v2-heading h1{font-size:24px}}
+
+
+/* Student Attendance-inspired blue and white authentication refresh */
+.auth-screen-v2{
+  background:
+    radial-gradient(circle at 12% 8%,rgba(37,99,235,.12),transparent 28%),
+    radial-gradient(circle at 90% 92%,rgba(14,165,233,.10),transparent 30%),
+    linear-gradient(135deg,#eff6ff 0%,#f8fbff 48%,#eaf3ff 100%);
+  color:#172b4d;
+}
+.auth-screen-v2:before{
+  background-image:linear-gradient(rgba(37,99,235,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.045) 1px,transparent 1px);
+  mask-image:linear-gradient(to bottom,#000,transparent 90%);
+}
+.auth-card-v2{
+  width:min(460px,100%);
+  padding:34px;
+  background:rgba(255,255,255,.97);
+  border:1px solid #d8e5f5;
+  border-radius:18px;
+  box-shadow:0 22px 65px rgba(34,78,135,.14),0 3px 12px rgba(34,78,135,.06);
+  color:#172b4d;
+}
+.auth-brand{margin-bottom:30px}
+.auth-brand b{color:#173b70}
+.auth-brand b span{color:#2878dc}
+.auth-brand small{color:#7b91ad}
+.auth-brand .brand-mark{
+  background:linear-gradient(145deg,#eaf3ff,#dcecff);
+  border:1px solid #c8ddf7;
+  color:#1768c5;
+  box-shadow:0 8px 20px rgba(37,99,235,.12);
+}
+.auth-v2-heading{text-align:left;margin:24px 0 22px}
+.auth-v2-icon{
+  width:46px;height:46px;margin:0 0 17px;
+  border:1px solid #c9def8;background:#edf5ff;color:#216bd0;border-radius:13px;
+}
+.auth-v2-heading .eyebrow{color:#3479ca;font-weight:800;letter-spacing:2px}
+.auth-v2-heading h1{color:#17345d;font-size:29px}
+.auth-v2-heading p{color:#71839b;font-size:13px}
+.auth-tabs{background:#f1f6fd;border:1px solid #dce8f6;border-radius:10px}
+.auth-tabs button{color:#6f829d;padding:11px;font-size:12px}
+.auth-tabs button.selected{
+  background:#fff;color:#1d65bd;
+  box-shadow:0 2px 8px rgba(30,85,150,.10),inset 0 0 0 1px #c8ddf7;
+}
+.auth-v2-form label{color:#526985;font:700 10px 'DM Mono';letter-spacing:1.2px}
+.auth-v2-form>input,.password-field input{
+  height:48px;background:#fff;border:1px solid #cddbed;color:#18365d;
+  border-radius:9px;box-shadow:inset 0 1px 2px rgba(25,60,100,.025);
+}
+.auth-v2-form>input::placeholder,.password-field input::placeholder{color:#9aabc0}
+.auth-v2-form>input:focus,.password-field input:focus{
+  border-color:#4389df;box-shadow:0 0 0 3px rgba(45,117,207,.12);outline:none;
+}
+.password-field button{color:#7188a4}
+.password-field button:hover{color:#216bd0}
+.auth-v2-form .auth-hint{color:#7c8fa8;font-size:11px}
+.auth-v2-submit{
+  height:49px;border:0;border-radius:9px;
+  background:linear-gradient(135deg,#2878dc,#175bb8);
+  box-shadow:0 9px 20px rgba(37,99,235,.20);
+  color:#fff;font-size:13px;
+}
+.auth-v2-submit:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.auth-forgot{color:#216bc5;font-size:11px;font-weight:700}
+.auth-foot{
+  color:#70839c;border-top:1px solid #e2ebf5;
+  font-size:11px;padding-top:17px;margin-top:24px;
+}
+.auth-foot svg{color:#2580d8;flex-shrink:0}
+.auth-error{
+  margin-top:13px;padding:11px 12px;border-radius:8px;
+  background:#fff1f1;border:1px solid #f5caca;color:#b42332;
+  font-size:12px;line-height:1.5;
+}
+.auth-notice{background:#fff8e8;border:1px solid #f2dfb6;color:#8a5b12;font-size:11px}
+.auth-screen-footer{color:#8ca0ba}
+@media(max-width:520px){
+  .auth-screen-v2{align-items:center;padding:20px 14px 42px}
+  .auth-card-v2{padding:26px 22px;margin:auto 0}
+  .auth-v2-heading{text-align:left}
+  .auth-v2-heading h1{font-size:25px}
+}
