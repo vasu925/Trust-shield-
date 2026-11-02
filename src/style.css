@@ -172,3 +172,6 @@
 .auth-notice{background:#382f1d;border:1px solid #6b572c;color:#f5d58d}
 .auth-screen-footer{color:#6f899d}
 @media(max-width:520px){.auth-card-v2{padding:26px 22px}}
+
+/* Clear, visible account sign-out action */
+.profile-logout{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 9px;border:1px solid #29445d;border-radius:7px;background:#102238;color:#9bdcff;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0}.profile-logout:hover{background:#18334d;border-color:#38bdf8;color:#fff}.profile{gap:8px}.profile>div:nth-child(2){min-width:0;flex:1}.profile>div:nth-child(2) b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px}
